@@ -1,0 +1,2 @@
+from .asiento_contable import AsientoContableSerializer
+from .movimiento import MovimientoSerializer
