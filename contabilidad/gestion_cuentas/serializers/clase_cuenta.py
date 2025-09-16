@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import ClaseCuenta
+from ..models.clase_cuenta import ClaseCuenta
 
 class ClaseCuentaSerializer(serializers.ModelSerializer):
     class Meta:

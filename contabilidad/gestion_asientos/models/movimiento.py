@@ -1,5 +1,5 @@
 from django.db import models
-from gestion_cuentas.models.cuenta import ClaseCuenta
+from gestion_cuentas.models.cuenta import Cuenta
 from .asiento_contable import AsientoContable
 class Movimiento(models.Model):
     class Meta:
@@ -9,7 +9,7 @@ class Movimiento(models.Model):
     debe = models.DecimalField(max_digits=10,decimal_places=3)
     haber = models.DecimalField(max_digits=10,decimal_places=3)
     id_cuenta = models.ForeignKey(
-        ClaseCuenta,
+        Cuenta,
         on_delete=models.CASCADE,
         related_name="movimientos"
     )
