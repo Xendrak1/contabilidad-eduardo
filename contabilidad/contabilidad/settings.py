@@ -41,19 +41,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_extensions',
     "corsheaders",
-    'gestion_asientos',
-    'gestion_cuentas',
-    'usuarios'
+    'apps.gestion_asientos',
+    'apps.gestion_cuentas',
+    'apps.usuarios',
+    'apps.configurar'
 ]
 ## parte de djangoRestFramework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # opcional
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        #'rest_framework.permissions.AllowAny', # todas las apis libres
+        'rest_framework.permissions.IsAuthenticated',# para proteger las apis
     ]
-    #'DEFAULT_PERMISSION_CLASSES': [
-    #    'rest_framework.permissions.IsAuthenticated',
-    #]
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),  # duración del access token
