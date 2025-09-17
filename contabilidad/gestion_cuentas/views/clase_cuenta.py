@@ -7,4 +7,4 @@ from rest_framework.permissions import IsAuthenticated
 class ClaseCuentaViewSet(viewsets.ModelViewSet):
     queryset = ClaseCuenta.objects.all()
     serializer_class = ClaseCuentaSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]

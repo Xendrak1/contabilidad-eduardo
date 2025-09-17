@@ -6,5 +6,5 @@ from rest_framework.permissions import IsAuthenticated
 class AsientoContableViewSet(viewsets.ModelViewSet):
     queryset = AsientoContable.objects.all()
     serializer_class = AsientoContableSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     

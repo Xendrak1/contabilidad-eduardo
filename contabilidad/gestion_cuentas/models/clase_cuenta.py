@@ -20,5 +20,23 @@ class ClaseCuenta(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     
+    def save(self, *args, **kwargs):
+        if not self.id:
+            codigo_str = str(self.codigo)
+            clase_seleccionada = None
+            
+            # Buscar el prefijo más largo que exista como ClaseCuenta
+            for i in range(len(codigo_str), 0, -1):
+                prefijo = int(codigo_str[:i])
+                try:
+                    clase_seleccionada = ClaseCuenta.objects.get(codigo=prefijo)
+                    break  # se encontró la clase más específica existente
+                except ClaseCuenta.DoesNotExist:
+                    continue
+            
+            self.id_padre= clase_seleccionada
+
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.nombre
