@@ -38,13 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'django_extensions',
-    "corsheaders",
-    'apps.gestion_asientos',
-    'apps.gestion_cuentas',
-    'apps.usuarios',
-    'apps.configurar'
+        'rest_framework',
+        'django_extensions',
+        "corsheaders",
+        'contabilidad.apps.gestion_asientos',
+        'contabilidad.apps.gestion_cuentas',
+        'contabilidad.apps.usuarios',
+        'contabilidad.apps.configurar'
 ]
 ## parte de djangoRestFramework
 REST_FRAMEWORK = {
