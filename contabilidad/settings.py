@@ -10,11 +10,54 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
+import os
+import os
 from pathlib import Path
 from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# --- ENV ---
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+
+_allowed = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()] or ["*"]
+
+_csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [u.strip() for u in _csrf.split(",") if u.strip()]
+
+# Detrás del proxy de Azure
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Estáticos
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# --- Lee ENV de Azure ---
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-mf&$v2m+id9iphtz1w2ap*@2nv93eomfv$2ajtwjti_8eurz*a")
+
+# ALLOWED_HOSTS como lista separada por comas
+_allowed = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["*"]  # (opcional) útil para probar; luego sé específico
+
+# CSRF_TRUSTED_ORIGINS (igual, separado por comas)
+_csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf.split(",") if o.strip()]
+
+# Detrás del proxy de Azure
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Archivos estáticos para producción
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +69,11 @@ SECRET_KEY = 'django-insecure-mf&$v2m+id9iphtz1w2ap*@2nv93eomfv$2ajtwjti_8eurz*a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'contabilidadwebapp-bhfvfqdchgfpbbec.brazilsouth-01.azurewebsites.net',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -38,13 +85,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'django_extensions',
-    "corsheaders",
-    'apps.gestion_asientos',
-    'apps.gestion_cuentas',
-    'apps.usuarios',
-    'apps.configurar'
+        'rest_framework',
+        'django_extensions',
+        "corsheaders",
+        'contabilidad.apps.gestion_asientos',
+        'contabilidad.apps.gestion_cuentas',
+        'contabilidad.apps.usuarios',
+        'contabilidad.apps.configurar'
 ]
 ## parte de djangoRestFramework
 REST_FRAMEWORK = {
@@ -68,8 +115,9 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # importante en App Service
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,12 +150,18 @@ WSGI_APPLICATION = 'contabilidad.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+# --- Base de datos: usa SQLite si no tienes Postgres aún ---
+if os.getenv("USE_SQLITE", "1") == "1":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    import dj_database_url
+    DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL", ""))}
 
 
 # Password validation
