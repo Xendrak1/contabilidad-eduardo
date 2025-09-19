@@ -12,11 +12,30 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 
 import os
+import os
 from pathlib import Path
 from datetime import timedelta
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# --- ENV ---
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+
+_allowed = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()] or ["*"]
+
+_csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [u.strip() for u in _csrf.split(",") if u.strip()]
+
+# Detrás del proxy de Azure
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Estáticos
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # --- Lee ENV de Azure ---
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
@@ -127,12 +146,18 @@ WSGI_APPLICATION = 'contabilidad.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+# --- Base de datos: usa SQLite si no tienes Postgres aún ---
+if os.getenv("USE_SQLITE", "1") == "1":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    import dj_database_url
+    DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL", ""))}
 
 
 # Password validation
