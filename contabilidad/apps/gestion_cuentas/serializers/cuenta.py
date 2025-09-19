@@ -1,11 +1,17 @@
 from rest_framework import serializers
 from ..models.cuenta import Cuenta
 from ...configurar.models.empresa import UserEmpresa
+
+
+
 class CuentaSerializer(serializers.ModelSerializer):
     clase_cuenta = serializers.SerializerMethodField()
     class Meta:
         model = Cuenta
         fields = ["id","codigo","nombre" , "estado", "clase_cuenta","id_empresa"]
+        extra_kwargs = {
+            "id_empresa": {"read_only": True}  # <--- ya no será obligatorio
+        }
         
     def get_clase_cuenta(self,obj):
         if obj.id_clase_cuenta:
@@ -28,3 +34,6 @@ class CuentaSerializer(serializers.ModelSerializer):
         # Asignar automáticamente la empresa
         validated_data["id_empresa"] = user_empresa.empresa
         return super().create(validated_data)        
+    
+
+    

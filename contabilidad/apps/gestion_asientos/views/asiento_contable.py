@@ -7,4 +7,7 @@ class AsientoContableViewSet(viewsets.ModelViewSet):
     queryset = AsientoContable.objects.all()
     serializer_class = AsientoContableSerializer
     permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        print("Payload recibido:", request.data)  # 👈 aquí ves el JSON que envía el frontend
+        return super().create(request, *args, **kwargs)
     

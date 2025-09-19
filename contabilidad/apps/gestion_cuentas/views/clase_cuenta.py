@@ -9,10 +9,15 @@ class ClaseCuentaViewSet(viewsets.ModelViewSet):
     serializer_class = ClaseCuentaSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            user_empresa = UserEmpresa.objects.filter(user=self.request.user).first()
+        print("entro al view")
+        user = self.request.user
+        if user.is_authenticated:
+            # Obtener la primera relación UserEmpresa del usuario
+            user_empresa = UserEmpresa.objects.filter(user=user).first()
+            
             if user_empresa:
+                # Filtrar cuentas solo de esa empresa
                 return ClaseCuenta.objects.filter(id_empresa=user_empresa.empresa)
-        return ClaseCuenta.objects.all() 
-
-   
+        # Ninguna cuenta si no hay usuario autenticado o sin empresa asociada
+        return ClaseCuenta.objects.none()
+    

@@ -5,6 +5,7 @@ from ...configurar.models.empresa import UserEmpresa
 class ClaseCuentaSerializer(serializers.ModelSerializer):
     # id_padre solo esta disponible para lectura
     id_padre = serializers.PrimaryKeyRelatedField(read_only=True)
+    id_empresa = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = ClaseCuenta
         # campos que consume el api
@@ -12,6 +13,7 @@ class ClaseCuentaSerializer(serializers.ModelSerializer):
 
     
     def create(self, validated_data):
+        print("entro al serializer")
         request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             raise serializers.ValidationError("Usuario no autenticado")
