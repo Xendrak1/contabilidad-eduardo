@@ -69,7 +69,11 @@ SECRET_KEY = 'django-insecure-mf&$v2m+id9iphtz1w2ap*@2nv93eomfv$2ajtwjti_8eurz*a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'contabilidadwebapp-bhfvfqdchgfpbbec.brazilsouth-01.azurewebsites.net',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
